@@ -57,6 +57,9 @@ default['postgresql']['server']['init_package'] =
     'upstart'
   end
 
+default['postgresql']['config']['ident_file'] = "/etc/postgresql/#{node['postgresql']['version']}/main/pg_ident.conf"
+default['postgresql']['ident_maps'] = nil  
+
 case node['platform']
 when 'debian'
   if node['platform_version'].to_i == 7
