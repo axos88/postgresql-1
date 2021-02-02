@@ -40,6 +40,28 @@ if node['platform_family'] == 'debian'
 
 end
 
+directory node['postgresql']['dir'] do
+  recursive true
+  owner 'postgres'
+  group 'postgres'
+  mode 0700
+end
+
+directory node['postgresql']['config']['data_directory'] do
+  recursive true
+  owner 'postgres'
+  group 'postgres'
+  mode 0700
+end
+
+execute 'Init DB' do
+  user 'postgres'
+
+  command "export LC_ALL=C; /usr/lib/postgresql/#{node['postgresql']['version']}/bin/pg_ctl -D '#{node['postgresql']['config']['data_directory']}' initdb"
+  action :run
+  not_if { ::File.exist?(File.join(node['postgresql']['config']['data_directory'], 'PG_VERSION')) }
+end
+
 template "#{node['postgresql']['dir']}/postgresql.conf" do
   source 'postgresql.conf.erb'
   owner 'postgres'
